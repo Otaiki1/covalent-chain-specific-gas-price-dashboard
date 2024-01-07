@@ -19,10 +19,6 @@ This single-page application (SPA) was developed as part of the Covalent bounty 
 ## Created with Tremor Components
 - https://www.tremor.so/
 
-## Documentation for API Key Access:
-Certainly! Here's the provided information formatted in Markdown:
-
-markdown
 
 ## Documentation for API Key Access:
 
