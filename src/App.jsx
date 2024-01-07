@@ -1,6 +1,5 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { CovalentClient } from "@covalenthq/client-sdk";
 import "./App.css";
 import {
   Select,
@@ -20,7 +19,7 @@ function App() {
   const [apiKey, setApiKey] = useState("");
   const [chain, setChain] = useState("eth-mainnet");
   const [event, setEvent] = useState("ERC20 token transfers");
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [gasPrice, setGasPrice] = useState({ one: "", three: "", five: "" });
 
   const valuesArray = [
@@ -125,10 +124,44 @@ function App() {
     "Native token transfers",
     "Uniswap V3 swap events",
   ];
+  const keys = ["erc20", "nativetokens", "uniswapv3"];
+
+  const fetchGasPrices = async (_apiKey, _eventType, _chain) => {
+    const client = new CovalentClient(_apiKey);
+    const response = await client.BaseService.getGasPrices(
+      _chain,
+      _eventType,
+      "USD"
+    );
+    console.log(response);
+    if (response.error) {
+      setGasPrice({ one: "Error", three: "Error", five: "Error" });
+    }
+    alert("error");
+    if (!response.data.items[0].pretty_total_gas_quote) {
+      setGasPrice({
+        one: "unavailable",
+        three: "unavailable",
+        five: "unavailable",
+      });
+    } else {
+      setGasPrice({
+        one: response.data.items[0].pretty_total_gas_quote,
+        three: response.data.items[1].pretty_total_gas_quote,
+        five: response.data.items[2].pretty_total_gas_quote,
+      });
+    }
+    setLoading(false);
+  };
 
   return (
     <>
-      <div className="flex space-x-8">
+      <div>
+        <p className="text-3xl font-bold border inline-block p-5 border-red-400">
+          GAS⛽️ PRICE DASHBOARD📊
+        </p>
+      </div>
+      <div className="flex space-x-8 mt-3">
         <div className="w-full">
           <p className="my-2 text-xl font-bold">Your Covalent🔮 API Key🗝</p>
           <TextInput
@@ -165,14 +198,21 @@ function App() {
             Select your desired events ⚗️
           </p>
           <Select value={event} onValueChange={setEvent}>
-            {eventTypes.map((item) => (
-              <SelectItem value={item}>{item}</SelectItem>
+            {eventTypes.map((item, key) => (
+              <SelectItem value={keys[key]}>{item}</SelectItem>
             ))}
           </Select>
         </div>
       </div>
       <div className="mt-4">
-        <Button> Click to Update API KEY/Refresh</Button>
+        <Button
+          onClick={() => {
+            fetchGasPrices(apiKey, event, chain);
+          }}
+        >
+          {" "}
+          Click to Update API KEY/Refresh
+        </Button>
       </div>
 
       <div className="mt-5">
@@ -237,7 +277,7 @@ function App() {
           </Callout>
         </div>
         <div className="mb-4">
-          <Callout className="mt-4" title="About Page" color="rose">
+          <Callout className="mt-4" title="About Page" color="white">
             This webpage was created for the Covalent bounty titled "Build and
             Deploy a Chain-specific Gas Price Dashboard Using GoldRush Kit."
           </Callout>
