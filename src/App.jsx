@@ -138,6 +138,7 @@ function App() {
     console.log(response);
     if (response.error) {
       setGasPrice({ one: "Error", three: "Error", five: "Error" });
+      alert("Error Fetching inputs");
     }
 
     if (!response.data.items[0].pretty_total_gas_quote) {
@@ -146,6 +147,7 @@ function App() {
         three: "unavailable",
         five: "unavailable",
       });
+      alert("prices Unavailable");
     } else {
       setGasPrice({
         one: response.data.items[0].pretty_total_gas_quote,
@@ -223,7 +225,7 @@ function App() {
         </p>
         <Grid numItems={1} numItemsSm={1} numItemsLg={3} className="gap-3">
           {loading && (
-            <div className="w-50 mx-auto">
+            <div className=" mx-auto">
               <Hourglass
                 visible={true}
                 height="80"
