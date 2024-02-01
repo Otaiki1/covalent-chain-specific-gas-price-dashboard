@@ -14,6 +14,7 @@ import {
   Button,
   Callout,
 } from "@tremor/react";
+import { Hourglass } from "react-loader-spinner";
 
 function App() {
   const [apiKey, setApiKey] = useState("");
@@ -127,6 +128,7 @@ function App() {
   const keys = ["erc20", "nativetokens", "uniswapv3"];
 
   const fetchGasPrices = async (_apiKey, _eventType, _chain) => {
+    setLoading(true);
     const client = new CovalentClient(_apiKey);
     const response = await client.BaseService.getGasPrices(
       _chain,
@@ -137,7 +139,7 @@ function App() {
     if (response.error) {
       setGasPrice({ one: "Error", three: "Error", five: "Error" });
     }
-    alert("error");
+
     if (!response.data.items[0].pretty_total_gas_quote) {
       setGasPrice({
         one: "unavailable",
@@ -220,33 +222,45 @@ function App() {
           👇 SEE CURRENT GAS⛽️ FEES 👇
         </p>
         <Grid numItems={1} numItemsSm={1} numItemsLg={3} className="gap-3">
-          <Col>
-            <Card>
-              <Title>Average Gas Price</Title>
-              <Text> 1️⃣ minute</Text>
-              <Metric className="mt-4">
-                {loading ? "-----" : gasPrice.one}
-              </Metric>
-            </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Title>Average Gas Price</Title>
-              <Text>3️⃣ minutes</Text>
-              <Metric className="mt-4">
-                {loading ? "-----" : gasPrice.three}
-              </Metric>
-            </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Title>Average Gas Price</Title>
-              <Text> 5️⃣ minutes</Text>
-              <Metric className="mt-4">
-                {loading ? "-----" : gasPrice.five}
-              </Metric>
-            </Card>
-          </Col>
+          {loading && (
+            <div className="w-50 mx-auto">
+              <Hourglass
+                visible={true}
+                height="80"
+                width="80"
+                ariaLabel="hourglass-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+                colors={["#306cce", "#72a1ed"]}
+              />
+            </div>
+          )}
+          {!loading && (
+            <>
+              {" "}
+              <Col>
+                <Card>
+                  <Title>Average Gas Price</Title>
+                  <Text> 1️⃣ minute</Text>
+                  <Metric className="mt-4">{gasPrice.one}</Metric>
+                </Card>
+              </Col>
+              <Col>
+                <Card>
+                  <Title>Average Gas Price</Title>
+                  <Text>3️⃣ minutes</Text>
+                  <Metric className="mt-4">{gasPrice.three}</Metric>
+                </Card>
+              </Col>
+              <Col>
+                <Card>
+                  <Title>Average Gas Price</Title>
+                  <Text> 5️⃣ minutes</Text>
+                  <Metric className="mt-4">{gasPrice.five}</Metric>
+                </Card>
+              </Col>
+            </>
+          )}
         </Grid>
       </div>
 
